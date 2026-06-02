@@ -1,0 +1,8 @@
+feynman_data/
+feynman_faiss_index/
+feynman_faiss_index_knowledge/
+feynman_faiss_index_persona/
+memory_index/
+venv/
+chat_memory.json
+demo/
