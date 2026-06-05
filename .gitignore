@@ -6,3 +6,8 @@ memory_index/
 venv/
 chat_memory.json
 demo/
+dataset/
+speecht5_finetuned.pt
+audio.webm
+.streamlit/secrets.toml
+segments.json

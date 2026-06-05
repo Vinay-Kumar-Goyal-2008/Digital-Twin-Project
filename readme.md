@@ -1,37 +1,184 @@
 # 🧠 Feynman's Twin
 
-> An AI-powered digital twin of Richard Feynman — built to explain the complex simply, using intuition, analogies, and step-by-step reasoning.
+> An AI-powered digital twin of Richard Feynman that combines Agentic RAG, Long-Term Memory, Persona Retrieval, and Voice Interaction to explain complex ideas through intuition, analogies, and first-principles reasoning.
 
-Feynman's Twin ingests curated books, research papers, Wikipedia content, and YouTube transcripts to build a retrieval-augmented knowledge base. It then exposes this knowledge through a conversational Streamlit interface that responds the way Feynman would teach — from first principles, without unnecessary formalism.
+Feynman's Twin is not a simple chatbot. It is an agentic AI system designed to simulate how Richard Feynman would think, reason, and teach.
+
+The system builds two independent knowledge spaces:
+
+* **Knowledge Space** → Scientific facts, books, papers, Wikipedia articles, and lecture transcripts.
+* **Persona Space** → Feynman's communication style, teaching philosophy, analogies, interviews, and reasoning patterns.
+
+Using LangGraph, retrieval pipelines, memory systems, reflection loops, and Gemini 2.5 Flash, the agent generates responses that are both factually grounded and stylistically consistent with Feynman's teaching approach.
 
 ---
 
-## 📽️ Demo
+## 🎥 Demo
 
-A sample demo video is included in the repository:
+A sample demonstration is available below:
 
-[![Watch Feynman Twin Demo](https://img.youtube.com/vi/hI0J52DZLcw/maxresdefault.jpg)](https://youtu.be/hI0J52DZLcw)
+[Watch Demo](https://youtu.be/hI0J52DZLcw)
 
 ---
 
-## ✨ Features
+# ✨ Key Features
 
-- **Multi-source knowledge ingestion** — books, research papers, Wikipedia, and YouTube transcripts
-- **Vector database** — semantic search over embedded knowledge chunks. Two vector database feynman_faiss_index_knowledge and feynman_faiss_index_persona
-- **RAG pipeline** — retrieval-augmented generation for grounded, contextual responses. Use of RAG for persona qualities extraction that are required for the given query and knowledge extraction required as a context for that query. RAG is also used for controlled long range memory retrieval which helps in giving gemini a very good context about previous chats related to that query instead of dumping everything . 
-- **Feynman-style responses** — intuitive, analogy-driven explanations
-- **Gemini Use** - Use of Gemini Flash 2.5 for a professional resoning along with a proper answer
-- **Streamlit chat interface** — clean, interactive UI for querying the twin
+### 🧠 Dual-RAG Architecture
+
+Two independent FAISS vector databases power the system:
+
+| Database        | Purpose                                |
+| --------------- | -------------------------------------- |
+| Knowledge Index | Scientific facts and concepts          |
+| Persona Index   | Feynman's reasoning and teaching style |
+
+This separation allows the model to retrieve **what Feynman would know** and **how Feynman would explain it** independently.
+
 ---
 
-## 🏗️ Project Workflow
+### 🤖 Agentic LangGraph Workflow
 
-The system runs in two sequential phases before the app can be launched.
-Remember to install all the required libraries before running commands
+Instead of a single LLM call, the system uses a multi-stage reasoning graph:
 
-### Phase 1 — Data Collection
+User Query
+↓
+Memory Retrieval
+↓
+Knowledge Retrieval
+↓
+Persona Retrieval
+↓
+Response Generation
+↓
+Self Reflection
+↓
+Hallucination Check
+↓
+Response Revision (if needed)
+↓
+Final Answer
 
-Run each script to gather and preprocess knowledge from its respective source:
+This enables grounded, high-quality responses with significantly reduced hallucinations.
+
+---
+
+### 🧩 Long-Term Memory
+
+The system stores previous conversations and creates embeddings for them.
+
+For every new query:
+
+* Relevant historical conversations are retrieved
+* Memory is filtered semantically
+* Only useful context is supplied to the model
+
+This avoids context-window dumping while preserving continuity across sessions.
+
+---
+
+### 📚 Multi-Source Knowledge Collection
+
+Knowledge is automatically gathered from:
+
+* Physics books
+* Research papers
+* Wikipedia articles
+* YouTube lecture transcripts
+
+The collected information is cleaned, chunked, embedded, and indexed for retrieval.
+
+---
+
+### 🎙️ Voice-Enabled Digital Twin
+
+The assistant can generate spoken responses using a customizable text-to-speech pipeline.
+
+Features include:
+
+* Automatic voice generation
+* Autoplay support
+* Voice cloning compatibility
+* Hands-free interaction
+
+---
+
+### 🔍 Retrieval-Augmented Generation (RAG)
+
+The model never answers directly from the LLM alone.
+
+Responses are grounded through:
+
+* Semantic retrieval
+* Knowledge verification
+* Context-aware memory retrieval
+* Persona retrieval
+
+This significantly improves factual consistency.
+
+---
+
+### 🧠 Gemini-Powered Reasoning
+
+The system uses Gemini 2.5 Flash as its reasoning engine.
+
+Responsibilities include:
+
+* Response synthesis
+* Reflection
+* Hallucination detection
+* Persona adaptation
+* Context integration
+
+---
+
+# 🏗️ System Architecture
+
+┌─────────────────────┐
+│ User Query │
+└──────────┬──────────┘
+│
+▼
+┌─────────────────────┐
+│ Memory Retrieval │
+└──────────┬──────────┘
+│
+▼
+┌─────────────────────┐
+│ Knowledge RAG │
+└──────────┬──────────┘
+│
+▼
+┌─────────────────────┐
+│ Persona RAG │
+└──────────┬──────────┘
+│
+▼
+┌─────────────────────┐
+│ Gemini Generation │
+└──────────┬──────────┘
+│
+▼
+┌─────────────────────┐
+│ Reflection Agent │
+└──────────┬──────────┘
+│
+▼
+┌─────────────────────┐
+│ Hallucination Check │
+└──────────┬──────────┘
+│
+▼
+┌─────────────────────┐
+│ Final Response │
+└─────────────────────┘
+
+---
+
+# 📂 Project Workflow
+
+## Phase 1 — Data Collection
+
+Collect information from all supported sources.
 
 ```bash
 python book_collection_feynman.py
@@ -40,118 +187,131 @@ python wikipedia_feynman.py
 python youtube_processing_feynman.py
 ```
 
-Each script scrapes, cleans, and structures its source into text chunks ready for embedding.
+The scripts gather, clean, and structure data into retrieval-ready documents.
 
-### Phase 2 — Vector Store Creation
+---
 
-Once all data is collected, build the knowledge base:
+## Phase 2 — Vector Database Construction
+
+Build both retrieval systems.
 
 ```bash
 python data_storing.py
 ```
 
-This embeds all text chunks and stores them in a vector database for semantic retrieval.
+This step:
 
-### Phase 3 — Run the App
+* Chunks documents
+* Creates embeddings
+* Builds Knowledge FAISS Index
+* Builds Persona FAISS Index
 
-Launch the Streamlit interface:
+Generated databases:
+
+```text
+feynman_faiss_index_knowledge/
+feynman_faiss_index_persona/
+```
+
+---
+
+## Phase 3 — Launch Application
 
 ```bash
 streamlit run app.py
 ```
 
-This starts the chat UI, connects to the vector store, and enables Feynman-style Q&A.
-
->  **Order matters.** Run the collection scripts → then `data_storing.py` → then `app.py`.
+This starts the complete digital twin system.
 
 ---
 
-## 📁 Project Structure
+# 📁 Project Structure
 
-```
+```text
 Feynman-Twin/
 │
-├── book_collection_feynman.py       # Ingests and processes books
-├── paper_collection_feynman.py      # Ingests research papers
-├── wikipedia_feynmen.py             # Ingests Wikipedia articles
-├── youtube_processing_feynman.py    # Ingests YouTube transcripts
+├── app.py
+├── chat_engine.py
+├── voice_engine.py
 │
-├── data_storing.py                  # Embeds data and builds vector store
-├── app.py                           # Streamlit chat application
+├── book_collection_feynman.py
+├── paper_collection_feynman.py
+├── wikipedia_feynman.py
+├── youtube_processing_feynman.py
 │
-├── vectorstore/                     # Auto-generated after data_storing.py
-├── data/                            # Processed raw datasets
+├── data_storing.py
 │
-├── demo/
-│   └── feynman_demo.mp4
+├── feynman_faiss_index_knowledge/
+├── feynman_faiss_index_persona/
 │
-└── README.md
+├── memory_index/
+├── chat_memory.json
+│
+├── data/
+│
+└── demo/
 ```
 
 ---
 
-## ⚙️ Installation
+# ⚙️ Installation
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Key dependencies include:
+Required technologies include:
 
-| Category | Libraries |
-|---|---|
-| App framework | `streamlit` |
-| LLM & RAG | `langchain`, `langchain_google_genai`,`huggingface transformers` |
-| Vector store | `faiss` |
-| Data sources | `wikipedia-api`, `youtube-transcript-api` |
-
----
-
-## 🔬 How It Works
-
-```
-Data Sources  →  Chunking & Cleaning  →  Embedding  →  Vector Store
-                                                              ↓
-                                          User Query  →  RAG Pipeline  →  Feynman-style Response
-```
-
-1. **Ingestion** — content is pulled from books, papers, Wikipedia, and YouTube
-2. **Chunking** — content is split into semantically meaningful segments
-3. **Embedding** — chunks are converted into vector representations
-4. **Storage** — embeddings are indexed in a vector database
-5. **Retrieval** — user queries fetch the most relevant chunks
-6. **Generation** — the LLM synthesizes a response in Feynman's teaching style
+| Category          | Libraries                             |
+| ----------------- | ------------------------------------- |
+| UI                | Streamlit                             |
+| LLM               | Gemini 2.5 Flash                      |
+| Agent Framework   | LangGraph                             |
+| Retrieval         | LangChain                             |
+| Embeddings        | Sentence Transformers                 |
+| Vector Store      | FAISS                                 |
+| Knowledge Sources | Wikipedia API, YouTube Transcript API |
+| Voice             | Edge-TTS / Custom TTS                 |
 
 ---
 
-## 🎯 Goal
+# 🎯 Goals
 
-Simulate how Richard Feynman would explain any complex topic — through:
+Feynman's Twin aims to recreate the teaching principles that made Richard Feynman exceptional:
 
-- **Intuition** over memorization
-- **Analogies** that make the abstract concrete
-- **Step-by-step reasoning** from first principles
-- **Simplicity** without sacrificing correctness
+* Understanding over memorization
+* Intuition before equations
+* First-principles reasoning
+* Physical mental models
+* Simplicity without loss of rigor
 
----
-
-## 🧪 Example Use Cases
-
-- Understand a physics concept from first principles
-- Get an intuitive walkthrough of quantum mechanics
-- Simplify a dense research paper into plain language
-- Explore science the way Feynman would teach it
+The objective is not merely to answer questions, but to help users develop genuine understanding.
 
 ---
 
-## 📌 Notes
+# 🧪 Example Use Cases
 
-- All collection scripts must be run **before** launching the app
-- The vector store must be built **before** starting Streamlit
-- Internet access is required during initial data collection
+* Learn physics from first principles
+* Understand quantum mechanics intuitively
+* Simplify difficult research papers
+* Explore scientific concepts conversationally
+* Study through Feynman-style explanations
+* Interact with a voice-enabled digital twin
 
 ---
 
-## 🧑‍💻 Author
+# 🚀 Future Improvements
 
-Built as a digital twin + RAG learning project, inspired by Richard Feynman's legendary teaching philosophy.
+* Multi-agent reasoning
+* Hybrid retrieval (BM25 + Dense Retrieval)
+* Cross-encoder reranking
+* Agent interoperability support
+* Better voice cloning
+* Visual explanation generation
+* Tool-using Feynman agents
+
+---
+
+# 👨‍💻 Author
+
+Built as an exploration of Agentic AI, Digital Twins, Long-Term Memory Systems, and Retrieval-Augmented Generation inspired by Richard Feynman's legendary approach to teaching and scientific reasoning.
